@@ -11,6 +11,22 @@ const initialForm = {
   status: 'aktiv',
 }
 
+const readErrorMessage = async (response, fallbackMessage) => {
+  const contentType = response.headers.get('Content-Type') || ''
+
+  if (!contentType.includes('application/json')) {
+    return fallbackMessage
+  }
+
+  const errorBody = await response.json()
+
+  if (Array.isArray(errorBody.details) && errorBody.details.length > 0) {
+    return errorBody.details.join('\n')
+  }
+
+  return errorBody.message || errorBody.detail || fallbackMessage
+}
+
 function App() {
   const [devices, setDevices] = useState([])
   const [form, setForm] = useState(initialForm)
@@ -26,7 +42,7 @@ function App() {
     try {
       const response = await fetch(API_URL)
       if (!response.ok) {
-        throw new Error('Geräte konnten nicht geladen werden.')
+        throw new Error(await readErrorMessage(response, 'Geräte konnten nicht geladen werden.'))
       }
       const data = await response.json()
       setDevices(data)
@@ -64,7 +80,7 @@ function App() {
       })
 
       if (!response.ok) {
-        throw new Error('Gerät konnte nicht gespeichert werden.')
+        throw new Error(await readErrorMessage(response, 'Gerät konnte nicht gespeichert werden.'))
       }
 
       const savedDevice = await response.json()
@@ -87,7 +103,7 @@ function App() {
       })
 
       if (!response.ok) {
-        throw new Error('Gerät konnte nicht gelöscht werden.')
+        throw new Error(await readErrorMessage(response, 'Gerät konnte nicht gelöscht werden.'))
       }
 
       setDevices((currentDevices) =>
@@ -213,7 +229,7 @@ function App() {
                           onClick={() => handleDelete(device.id)}
                           disabled={deletingId === device.id}
                         >
-                          {deletingId === device.id ? 'Löschen...' : 'Löschen'}
+                          {deletingId === device.id ? 'Loeschen...' : 'Loeschen'}
                         </button>
                       </td>
                     </tr>
