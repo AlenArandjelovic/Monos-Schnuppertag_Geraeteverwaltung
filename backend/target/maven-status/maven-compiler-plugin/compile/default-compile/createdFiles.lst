@@ -1,8 +1,16 @@
 com\example\backend\dto\DeviceCreateRequestDto.class
-com\example\backend\DeviceController.class
+com\example\backend\exception\ResourceNotFoundException.class
+com\example\backend\config\RateLimitingFilter$ClientRequestInfo.class
 com\example\backend\BackendApplication.class
+com\example\backend\config\WebConfig.class
+com\example\backend\exception\GlobalExceptionHandler.class
+com\example\backend\config\RateLimitingFilter.class
+com\example\backend\service\DeviceService.class
+com\example\backend\config\SecurityConfig.class
 com\example\backend\dto\DeviceResponseDto.class
 com\example\backend\dto\DeviceUpdateRequestDto.class
 com\example\backend\HelloController.class
+com\example\backend\controller\DeviceController.class
+com\example\backend\exception\ErrorResponse.class
 com\example\backend\DeviceRepository.class
 com\example\backend\Device.class

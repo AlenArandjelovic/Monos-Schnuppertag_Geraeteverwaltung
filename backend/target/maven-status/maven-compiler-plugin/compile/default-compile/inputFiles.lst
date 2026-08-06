@@ -1,8 +1,15 @@
 E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\BackendApplication.java
+E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\config\RateLimitingFilter.java
+E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\config\SecurityConfig.java
+E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\config\WebConfig.java
+E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\controller\DeviceController.java
 E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\Device.java
-E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\DeviceController.java
 E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\DeviceRepository.java
 E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\dto\DeviceCreateRequestDto.java
 E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\dto\DeviceResponseDto.java
 E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\dto\DeviceUpdateRequestDto.java
+E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\exception\ErrorResponse.java
+E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\exception\GlobalExceptionHandler.java
+E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\exception\ResourceNotFoundException.java
 E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\HelloController.java
+E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\service\DeviceService.java
