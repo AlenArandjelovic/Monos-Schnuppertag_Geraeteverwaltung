@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from 'react'
 import './App.css'
+import Button from './components/Button'
 
 const API_URL = 'http://localhost:8080/devices'
 
@@ -222,13 +223,13 @@ function App() {
             </select>
           </label>
 
-          <button type="submit" disabled={isSaving}>
+          <Button type="submit" variant="primary" disabled={isSaving}>
             {isSaving ? 'Speichern...' : editingDevice ? 'Aktualisieren' : 'Gerät speichern'}
-          </button>
+          </Button>
           {editingDevice && (
-            <button type="button" className="cancel-button" onClick={cancelEdit}>
+            <Button type="button" variant="secondary" onClick={cancelEdit}>
               Abbrechen
-            </button>
+            </Button>
           )}
         </form>
 
@@ -285,22 +286,22 @@ function App() {
                       </td>
                       <td>{device.createdAt}</td>
                       <td>
-                        <button
-                          className="edit-button"
+                        <Button
+                          variant="secondary"
                           type="button"
                           onClick={() => startEdit(device)}
                           disabled={deletingId === device.id}
                         >
                           Bearbeiten
-                        </button>
-                        <button
-                          className="delete-button"
+                        </Button>
+                        <Button
+                          variant="danger"
                           type="button"
                           onClick={() => handleDelete(device.id)}
                           disabled={deletingId === device.id}
                         >
                           {deletingId === device.id ? 'Loeschen...' : 'Loeschen'}
-                        </button>
+                        </Button>
                       </td>
                     </tr>
                   ))}

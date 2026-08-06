@@ -76,7 +76,7 @@ select:focus {
   outline: 2px solid var(--accent-bg);
 }
 
-button {
+.button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -93,17 +93,27 @@ button {
   box-sizing: border-box;
 }
 
-button:disabled {
+.button:disabled {
   cursor: wait;
   opacity: 0.65;
 }
 
-.delete-button {
+.button--primary {
+  background: #2364aa;
+}
+
+.button--secondary {
+  background: #444;
+}
+
+.button--danger {
   background: #b42318;
 }
 
-.delete-button:hover:not(:disabled) {
-  background: #912018;
+.button--danger:hover:not(:disabled),
+.button--primary:hover:not(:disabled),
+.button--secondary:hover:not(:disabled) {
+  filter: brightness(0.9);
 }
 
 .device-list {
