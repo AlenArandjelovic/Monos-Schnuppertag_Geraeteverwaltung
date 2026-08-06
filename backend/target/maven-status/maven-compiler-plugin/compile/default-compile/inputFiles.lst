@@ -1,5 +1,8 @@
-E:\Schnuppertag\backend\src\main\java\com\example\backend\BackendApplication.java
-E:\Schnuppertag\backend\src\main\java\com\example\backend\Device.java
-E:\Schnuppertag\backend\src\main\java\com\example\backend\DeviceController.java
-E:\Schnuppertag\backend\src\main\java\com\example\backend\DeviceRepository.java
-E:\Schnuppertag\backend\src\main\java\com\example\backend\HelloController.java
+E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\BackendApplication.java
+E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\Device.java
+E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\DeviceController.java
+E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\DeviceRepository.java
+E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\dto\DeviceCreateRequestDto.java
+E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\dto\DeviceResponseDto.java
+E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\dto\DeviceUpdateRequestDto.java
+E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\HelloController.java

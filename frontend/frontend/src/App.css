@@ -92,6 +92,17 @@ button:disabled {
   opacity: 0.65;
 }
 
+.delete-button {
+  padding: 8px 10px;
+  color: #fff;
+  background: #b42318;
+  font-size: 14px;
+}
+
+.delete-button:hover:not(:disabled) {
+  background: #912018;
+}
+
 .device-list {
   min-width: 0;
   overflow: hidden;

@@ -1,2 +1,8 @@
+com\example\backend\dto\DeviceCreateRequestDto.class
+com\example\backend\DeviceController.class
 com\example\backend\BackendApplication.class
+com\example\backend\dto\DeviceResponseDto.class
+com\example\backend\dto\DeviceUpdateRequestDto.class
 com\example\backend\HelloController.class
+com\example\backend\DeviceRepository.class
+com\example\backend\Device.class

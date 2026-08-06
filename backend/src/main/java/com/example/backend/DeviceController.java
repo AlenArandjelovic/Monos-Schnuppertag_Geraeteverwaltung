@@ -2,9 +2,12 @@ package com.example.backend;
 
 import java.util.List;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
@@ -33,5 +36,15 @@ public class DeviceController {
         device.setId(null);
         device.setCreatedAt(null);
         return deviceRepository.save(device);
+    }
+
+    @DeleteMapping("/devices/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteDevice(@PathVariable Long id) {
+        if (!deviceRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Gerät wurde nicht gefunden.");
+        }
+
+        deviceRepository.deleteById(id);
     }
 }

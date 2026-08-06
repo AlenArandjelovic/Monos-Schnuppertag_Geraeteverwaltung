@@ -16,6 +16,7 @@ function App() {
   const [form, setForm] = useState(initialForm)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const [deletingId, setDeletingId] = useState(null)
   const [error, setError] = useState('')
 
   const loadDevices = async () => {
@@ -73,6 +74,29 @@ function App() {
       setError(err.message)
     } finally {
       setIsSaving(false)
+    }
+  }
+
+  const handleDelete = async (deviceId) => {
+    setDeletingId(deviceId)
+    setError('')
+
+    try {
+      const response = await fetch(`${API_URL}/${deviceId}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        throw new Error('Gerät konnte nicht gelöscht werden.')
+      }
+
+      setDevices((currentDevices) =>
+        currentDevices.filter((device) => device.id !== deviceId),
+      )
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -166,6 +190,7 @@ function App() {
                     <th>Standort</th>
                     <th>Status</th>
                     <th>Erfasst am</th>
+                    <th>Aktion</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -181,6 +206,16 @@ function App() {
                         </span>
                       </td>
                       <td>{device.createdAt}</td>
+                      <td>
+                        <button
+                          className="delete-button"
+                          type="button"
+                          onClick={() => handleDelete(device.id)}
+                          disabled={deletingId === device.id}
+                        >
+                          {deletingId === device.id ? 'Löschen...' : 'Löschen'}
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
