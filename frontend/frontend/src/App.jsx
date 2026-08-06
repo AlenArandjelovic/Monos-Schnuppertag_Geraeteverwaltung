@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import './App.css'
 import Button from './components/Button'
+import Modal from './components/Modal'
 
 const API_URL = 'http://localhost:8080/devices'
 
@@ -36,6 +37,7 @@ function App() {
   const [isSaving, setIsSaving] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
   const [editingDevice, setEditingDevice] = useState(null)
+  const [showModal, setShowModal] = useState(false)
   const [error, setError] = useState('')
 
   const loadDevices = async () => {
@@ -77,6 +79,7 @@ function App() {
       location: device.location,
       status: device.status,
     })
+    setShowModal(true)
   }
 
   const handleSearchChange = (event) => {
@@ -86,6 +89,7 @@ function App() {
   const cancelEdit = () => {
     setEditingDevice(null)
     setForm(initialForm)
+    setShowModal(false)
   }
 
   const handleSubmit = async (event) => {
@@ -117,6 +121,7 @@ function App() {
       })
       setForm(initialForm)
       setEditingDevice(null)
+      setShowModal(false)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -166,11 +171,14 @@ function App() {
           <p className="eyebrow">Inventar</p>
           <h1>Geräteverwaltung</h1>
         </div>
+        <div>
+          <Button onClick={() => { setEditingDevice(null); setForm(initialForm); setShowModal(true); }}>Gerät anlegen</Button>
+        </div>
       </header>
 
       {error && <p className="message error">{error}</p>}
 
-      <section className="device-layout">
+      <Modal isOpen={showModal} onClose={() => { cancelEdit(); }}>
         <form className="device-form" onSubmit={handleSubmit}>
           <h2>{editingDevice ? 'Gerät bearbeiten' : 'Neues Gerät'}</h2>
 
@@ -232,6 +240,9 @@ function App() {
             </Button>
           )}
         </form>
+      </Modal>
+
+      <section className="device-layout">
 
         <section className="device-list">
           <div className="list-header">
