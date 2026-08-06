@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import './App.css'
 
 const API_URL = 'http://localhost:8080/devices'
@@ -30,6 +30,7 @@ const readErrorMessage = async (response, fallbackMessage) => {
 function App() {
   const [devices, setDevices] = useState([])
   const [form, setForm] = useState(initialForm)
+  const [searchTerm, setSearchTerm] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
@@ -77,6 +78,10 @@ function App() {
     })
   }
 
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value)
+  }
+
   const cancelEdit = () => {
     setEditingDevice(null)
     setForm(initialForm)
@@ -117,6 +122,18 @@ function App() {
       setIsSaving(false)
     }
   }
+
+  const filteredDevices = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase()
+    if (!term) {
+      return devices
+    }
+
+    return devices.filter((device) =>
+      device.name.toLowerCase().includes(term) ||
+      device.serialNumber.toLowerCase().includes(term),
+    )
+  }, [devices, searchTerm])
 
   const handleDelete = async (deviceId) => {
     setDeletingId(deviceId)
@@ -217,14 +234,29 @@ function App() {
 
         <section className="device-list">
           <div className="list-header">
-            <h2>Geräte</h2>
-            <span>{devices.length}</span>
+            <div className="list-header-title">
+              <h2>Geräte</h2>
+              <span>{filteredDevices.length}</span>
+            </div>
+            <label className="search-label">
+              Suche
+              <input
+                className="search-input"
+                type="search"
+                name="search"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                placeholder="Name oder Seriennummer"
+              />
+            </label>
           </div>
 
           {isLoading ? (
             <p className="message">Geräte werden geladen...</p>
           ) : devices.length === 0 ? (
             <p className="message">Noch keine Geräte erfasst.</p>
+          ) : filteredDevices.length === 0 ? (
+            <p className="message">Keine Geräte gefunden.</p>
           ) : (
             <div className="table-wrap">
               <table>
@@ -240,7 +272,7 @@ function App() {
                   </tr>
                 </thead>
                 <tbody>
-                  {devices.map((device) => (
+                  {filteredDevices.map((device) => (
                     <tr key={device.id}>
                       <td>{device.name}</td>
                       <td>{device.type}</td>

@@ -130,6 +130,35 @@ button:disabled {
   font-weight: 700;
 }
 
+.list-header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-label {
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.search-input {
+  min-width: 240px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  background: var(--bg);
+  color: var(--text-h);
+  font: inherit;
+}
+
+.search-input:focus {
+  border-color: var(--accent);
+  outline: 2px solid var(--accent-bg);
+}
+
 .table-wrap {
   overflow-x: auto;
 }
