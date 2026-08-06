@@ -5,10 +5,10 @@
 Das Projekt besteht aus drei wesentlichen Teilen:
 
 - Frontend: React + Vite
-- Backend: Spring Boot 3 + Java 17
+- Backend: Spring Boot 3 + Java 21
 - Datenbank: MySQL 8
 
-Die Anwendung bildet eine einfache Geräteverwaltung. Das Frontend stellt eine Benutzeroberfläche zur Verfügung, über die Geräte erfasst und angezeigt werden können. Das Backend übernimmt die Geschäftslogik und stellt eine REST-API bereit. Die Daten werden in einer MySQL-Datenbank gespeichert.
+Die Anwendung bildet eine einfache Geräteverwaltung. Das Frontend stellt eine Benutzeroberfläche zur Verfügung, über die Geräte erfasst und angezeigt werden können. Das Backend übernimmt die Geschäftslogik und stellt eine REST-API bereit. Im Backend werden DTOs verwendet, um die API-Datenstrukturen von der internen JPA-Entity zu trennen. Die Daten werden in einer MySQL-Datenbank gespeichert.
 
 ### Gesamtaufbau
 
@@ -45,7 +45,7 @@ Das Frontend kommuniziert mit dem Backend über REST-API mit HTTP-Requests.
 - Datenformat: JSON
 - CORS-Konfiguration: `http://localhost:5173`
 
-Im aktuellen Frontend wird in [frontend/frontend/src/App.jsx](frontend/frontend/src/App.jsx) direkt per `fetch()` mit der API kommuniziert.
+Im aktuellen Frontend wird in [frontend/frontend/src/App.jsx](frontend/frontend/src/App.jsx) direkt per `fetch()` mit der API kommuniziert. Das Backend verwendet dafür separate DTO-Klassen wie `DeviceCreateRequestDto`, `DeviceUpdateRequestDto` und `DeviceResponseDto`, um die JSON-Anfragen und -Antworten zu modellieren.
 
 #### Verwendete API-Aufrufe
 
@@ -86,6 +86,8 @@ Aktuell im Projekt vorhanden:
 
 - `GET /devices`
 - `POST /devices`
+- `PUT /devices/{id}`
+- `DELETE /devices/{id}`
 - `GET /api/hello` (Beispiel-Endpoint aus dem HelloController)
 
 ### 3.5 Welche Datenformate werden übertragen?
@@ -267,12 +269,19 @@ Content-Type: application/json
 
 ### 8.6 DTOs
 
-Im aktuellen Stand werden keine separaten DTO-Klassen verwendet. Die API arbeitet direkt mit der Entity `Device`.
+Im aktuellen Stand werden separate DTO-Klassen verwendet. Die API arbeitet nicht direkt mit der Entity `Device`, sondern nutzt die folgenden DTOs:
+
+- `DeviceCreateRequestDto` für neue Geräte
+- `DeviceUpdateRequestDto` für Aktualisierungen vorhandener Geräte
+- `DeviceResponseDto` für die API-Antworten
+
+Diese Trennung hilft dabei, das API-Datenmodell vom internen Datenbankmodell sauber zu entkoppeln.
 
 ### 8.7 Validierung
 
-Die Validierung findet im Controller statt:
+Die Validierung erfolgt über Bean Validation in den DTO-Klassen und mit `@Valid` im Controller:
 
+- `name`, `type`, `serialNumber`, `location` und `status` werden auf Länge und Pflichtfelder geprüft.
 - `status` muss entweder `aktiv` oder `inaktiv` sein.
 - Bei ungültigen Werten wird ein `400 Bad Request` zurückgegeben.
 
@@ -284,15 +293,16 @@ Die Validierung findet im Controller statt:
 
 - `DeviceController`
   - Verantwortlich für REST-Endpunkte
-  - Bietet `GET /devices` und `POST /devices`
-  - Validiert die Eingaben
+  - Bietet `GET /devices`, `POST /devices`, `PUT /devices/{id}` und `DELETE /devices/{id}`
+  - Verwendet DTOs für Anfrage- und Antwortdaten
+  - Leitet Validierung und Geschäftslogik an den Service weiter
 
 - `HelloController`
   - Beispiel-Controller mit dem Endpoint `GET /api/hello`
 
 ### 9.2 Services
 
-Im aktuellen Projekt ist noch kein eigener Service-Layer vorhanden. Die Logik liegt direkt im Controller und Repository.
+Es gibt einen eigenen Service-Layer im Projekt. `DeviceService` kapselt die Geschäftslogik für das Erstellen, Aktualisieren, Laden und Löschen von Geräten. Dadurch bleibt der Controller schlank und die Geschäftslogik wiederverwendbar.
 
 ### 9.3 Repositories
 
@@ -308,10 +318,12 @@ Im aktuellen Projekt ist noch kein eigener Service-Layer vorhanden. Die Logik li
 
 ### 9.5 Fehlerhandling
 
-Das Backend nutzt Spring `ResponseStatusException` für Fehlerfälle:
+Das Backend nutzt einen globalen Exception-Handler (`@RestControllerAdvice`) für Fehlerfälle:
 
-- Bei ungültigem `status` wird ein Fehler mit HTTP 400 gesendet.
-- Fehler werden im Controller direkt abgefangen und als passende HTTP-Response zurückgegeben.
+- Validierungsfehler werden als `400 Bad Request` zurückgegeben.
+- Nicht gefundene Ressourcen führen zu `404 Not Found`.
+- Allgemeine Fehler werden als `500 Internal Server Error` behandelt.
+- Dadurch werden Fehler zentral strukturiert und konsistente HTTP-Antworten bereitgestellt.
 
 ---
 
