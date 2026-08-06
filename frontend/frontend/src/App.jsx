@@ -17,6 +17,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
+  const [editingDevice, setEditingDevice] = useState(null)
   const [error, setError] = useState('')
 
   const loadDevices = async () => {
@@ -49,14 +50,32 @@ function App() {
     }))
   }
 
+  const startEdit = (device) => {
+    setEditingDevice(device)
+    setForm({
+      name: device.name,
+      type: device.type,
+      serialNumber: device.serialNumber,
+      location: device.location,
+      status: device.status,
+    })
+  }
+
+  const cancelEdit = () => {
+    setEditingDevice(null)
+    setForm(initialForm)
+  }
+
   const handleSubmit = async (event) => {
     event.preventDefault()
     setIsSaving(true)
     setError('')
 
     try {
-      const response = await fetch(API_URL, {
-        method: 'POST',
+      const url = editingDevice ? `${API_URL}/${editingDevice.id}` : API_URL
+      const method = editingDevice ? 'PUT' : 'POST'
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -64,12 +83,18 @@ function App() {
       })
 
       if (!response.ok) {
-        throw new Error('Gerät konnte nicht gespeichert werden.')
+        throw new Error(editingDevice ? 'Gerät konnte nicht aktualisiert werden.' : 'Gerät konnte nicht gespeichert werden.')
       }
 
       const savedDevice = await response.json()
-      setDevices((currentDevices) => [...currentDevices, savedDevice])
+      setDevices((currentDevices) => {
+        if (editingDevice) {
+          return currentDevices.map((device) => (device.id === savedDevice.id ? savedDevice : device))
+        }
+        return [...currentDevices, savedDevice]
+      })
       setForm(initialForm)
+      setEditingDevice(null)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -113,7 +138,7 @@ function App() {
 
       <section className="device-layout">
         <form className="device-form" onSubmit={handleSubmit}>
-          <h2>Neues Gerät</h2>
+          <h2>{editingDevice ? 'Gerät bearbeiten' : 'Neues Gerät'}</h2>
 
           <label>
             Name
@@ -165,8 +190,13 @@ function App() {
           </label>
 
           <button type="submit" disabled={isSaving}>
-            {isSaving ? 'Speichern...' : 'Gerät speichern'}
+            {isSaving ? 'Speichern...' : editingDevice ? 'Aktualisieren' : 'Gerät speichern'}
           </button>
+          {editingDevice && (
+            <button type="button" className="cancel-button" onClick={cancelEdit}>
+              Abbrechen
+            </button>
+          )}
         </form>
 
         <section className="device-list">
@@ -207,6 +237,14 @@ function App() {
                       </td>
                       <td>{device.createdAt}</td>
                       <td>
+                        <button
+                          className="edit-button"
+                          type="button"
+                          onClick={() => startEdit(device)}
+                          disabled={deletingId === device.id}
+                        >
+                          Bearbeiten
+                        </button>
                         <button
                           className="delete-button"
                           type="button"
