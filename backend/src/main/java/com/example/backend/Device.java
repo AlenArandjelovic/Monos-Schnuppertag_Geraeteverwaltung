@@ -22,7 +22,7 @@ public class Device {
 
     private String type;
 
-    @Column(name = "serial_number", length = 100)
+    @Column(name = "serial_number", length = 100, unique = true)
     private String serialNumber;
 
     private String location;
