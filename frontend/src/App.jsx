@@ -16,17 +16,22 @@ const initialForm = {
 const readErrorMessage = async (response, fallbackMessage) => {
   const contentType = response.headers.get('Content-Type') || ''
 
-  if (!contentType.includes('application/json')) {
+  try {
+    if (contentType.includes('application/json')) {
+      const errorBody = await response.json()
+
+      if (Array.isArray(errorBody.details) && errorBody.details.length > 0) {
+        return errorBody.details.join('\n')
+      }
+
+      return errorBody.message || errorBody.detail || fallbackMessage
+    }
+
+    const text = await response.text()
+    return text || fallbackMessage
+  } catch {
     return fallbackMessage
   }
-
-  const errorBody = await response.json()
-
-  if (Array.isArray(errorBody.details) && errorBody.details.length > 0) {
-    return errorBody.details.join('\n')
-  }
-
-  return errorBody.message || errorBody.detail || fallbackMessage
 }
 
 function App() {
@@ -39,6 +44,7 @@ function App() {
   const [editingDevice, setEditingDevice] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [error, setError] = useState('')
+  const [formError, setFormError] = useState('')
 
   const loadDevices = async () => {
     setIsLoading(true)
@@ -68,6 +74,9 @@ function App() {
       ...currentForm,
       [name]: value,
     }))
+    if (formError) {
+      setFormError('')
+    }
   }
 
   const startEdit = (device) => {
@@ -89,6 +98,7 @@ function App() {
   const cancelEdit = () => {
     setEditingDevice(null)
     setForm(initialForm)
+    setFormError('')
     setShowModal(false)
   }
 
@@ -96,6 +106,7 @@ function App() {
     event.preventDefault()
     setIsSaving(true)
     setError('')
+    setFormError('')
 
     try {
       const url = editingDevice ? `${API_URL}/${editingDevice.id}` : API_URL
@@ -109,7 +120,12 @@ function App() {
       })
 
       if (!response.ok) {
-        throw new Error(await readErrorMessage(response, 'Gerät konnte nicht gespeichert werden.'))
+        const message = await readErrorMessage(response, 'Gerät konnte nicht gespeichert werden.')
+        if (response.status === 409 || /bereits|existiert|unique|serial/i.test(message)) {
+          setFormError(message)
+          return
+        }
+        throw new Error(message)
       }
 
       const savedDevice = await response.json()
@@ -181,6 +197,13 @@ function App() {
       <Modal isOpen={showModal} onClose={() => { cancelEdit(); }}>
         <form className="device-form" onSubmit={handleSubmit}>
           <h2>{editingDevice ? 'Gerät bearbeiten' : 'Neues Gerät'}</h2>
+
+{formError && (
+  <div className="form-error">
+    {formError}
+  </div>
+)}
+
 
           <label>
             Name
@@ -300,18 +323,30 @@ function App() {
                         <Button
                           variant="secondary"
                           type="button"
+                          className="icon-button"
                           onClick={() => startEdit(device)}
                           disabled={deletingId === device.id}
+                          aria-label={`Gerät ${device.name} bearbeiten`}
                         >
-                          Bearbeiten
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M3 17.25V21h3.75L17.81 8.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                          </svg>
                         </Button>
                         <Button
                           variant="danger"
                           type="button"
+                          className="icon-button"
                           onClick={() => handleDelete(device.id)}
                           disabled={deletingId === device.id}
+                          aria-label={`Gerät ${device.name} löschen`}
                         >
-                          {deletingId === device.id ? 'Loeschen...' : 'Loeschen'}
+                          {deletingId === device.id ? (
+                            <span className="icon-button__spinner" aria-hidden="true" />
+                          ) : (
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                              <path d="M9 3h6a1 1 0 0 1 1 1v1h3a1 1 0 1 1 0 2h-1v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7H5a1 1 0 1 1 0-2h3V4a1 1 0 0 1 1-1zm2 4h2v10h-2V7zm-3 0h2v10H8V7zm7 0h2v10h-2V7z" />
+                            </svg>
+                          )}
                         </Button>
                       </td>
                     </tr>
