@@ -1,4 +1,5 @@
 E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\BackendApplication.java
+E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\config\GlobalExceptionHandler.java
 E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\config\RateLimitingFilter.java
 E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\config\SecurityConfig.java
 E:\geraeteverwaltung_projekt\backend\src\main\java\com\example\backend\config\WebConfig.java
